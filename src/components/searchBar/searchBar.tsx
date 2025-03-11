@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Post } from "../../hooks/hook";
 import { BsSearch } from "react-icons/bs";
 import assets from "../../assets/W.png";
-import { motion, AnimatePresence } from "framer-motion"; 
+import { motion, AnimatePresence } from "framer-motion"; // Import framer-motion
 
 interface PostSearchProps {
   post: Post[];

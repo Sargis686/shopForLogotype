@@ -13,50 +13,52 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>(posts); // Состояние для фильтрованных постов
 
-  const [isHidden, setIsHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [hidden, setHidden] = useState(false);
+  const [prevScrollY, setPrevScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > 200 && currentScrollY > lastScrollY) {
-        setIsHidden(true);
+
+      if (currentScrollY < 200) {
+        setHidden(false);
+      } else if (currentScrollY > prevScrollY) {
+        setHidden(true);
       } else {
-        setIsHidden(false);
+        setHidden(false);
       }
-      setLastScrollY(currentScrollY);
+
+      setPrevScrollY(currentScrollY);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [prevScrollY]);
 
   return (
     <>
- <div className="relative z-100 flex items-center">  
-  
-  <div className="absolute right-40 flex items-center pr-4"> {/* Container for SearchBar */}  
-    <SearchBar post={posts} onSearch={setFilteredPosts} />  
-  </div>  
+      <div className="relative z-100 flex items-center">  
+        <div className="absolute right-20 flex items-center pr-4"> {/* Container for SearchBar */}  
+          <SearchBar post={posts} onSearch={setFilteredPosts} />  
+        </div>  
 
-  <img src={assets} alt="logotype" className="mx-auto" /> {/* Center the logotype */}  
-
-</div>    
+        <img src={assets} alt="logotype" className="mx-auto hidden md:block" /> {/* Hide on mobile, show on md+ */}  
+      </div>    
 
       <div
-        className={` bg-white fixed top-12 left-0 right-0 w-full  transition-transform duration-300 z-50 ${
-          isHidden ? "-translate-y-full" : "translate-y-0"
-        } lg:block hidden`}
-      >
-        <div className="container mx-auto flex justify-center p-4">
+        className={`fixed top-16 left-0 right-0 w-full transition-transform duration-300 z-50 ${
+          hidden ? "-translate-y-full" : "translate-y-0"
+        } `}
+      > 
+        <div className="fixed relative flex justify-center p-4">
           <MobileMenu />
         </div>
       </div>
 
       {/* Список постов */}
-      <div className="flex flex-wrap justify-between gap-4 px-4 md:px-8 mt-12">
+      <div className="flex flex-wrap relative top-20 left-10 justify-between gap-4 px-4 md:px-8 mt-12">
         {filteredPosts.length > 0 ? (
-          filteredPosts.map((item, index) => (
+          filteredPosts.map((item, index) => ( 
             <div
               key={index}
               className="w-full sm:w-[48%] lg:w-[32%] bg-white text-left shadow-md overflow-hidden cursor-pointer"
@@ -76,8 +78,8 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
                   {item.title}
                 </h3>
 
-                <div className="px-4 pb-4 flex items-center text-[0.75rem] text-gray-500">
-                  <p className="text-black font-bold">{item.autor}</p>
+                <div className="px-4 pb-4 flex items-center text-[0.75rem] text-black-500">
+                  <p className="font-bold">{item.autor}</p>
                   <p>
                     {item.date} • {item.views} Views
                   </p>
